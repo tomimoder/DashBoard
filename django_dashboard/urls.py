@@ -19,8 +19,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', include('dashboard.urls')),
-    path('categories/', include('dashboard.urls')),
-    path('sales/', include('dashboard.urls')),
-    path('systemlogs/', include('dashboard.urls')),
+    path('api/v1/', include('dashboard.urls')), #Esto lo que hace es incluir las rutas del dashboard app bajo el prefijo 
+                                                #'api/v1/' (por ejemplo, 'api/v1/users/', 'api/v1/categories/', etc.)
+    #path('users/', include('dashboard.urls')),
+    #path('categories/', include('dashboard.urls')),
+    #path('sales/', include('dashboard.urls')),
+    #path('systemlogs/', include('dashboard.urls')),
 ]
