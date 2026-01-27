@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   LayoutDashboard,
   Users,
@@ -14,9 +14,28 @@ import {
   TrendingUp,
 } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
+import { useNavigate, useLocation } from "react-router-dom"
+
+const sidebarItems = [
+  { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
+  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
+  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
+  { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
+]
 
 export default function Page() {
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const [activeTab, setActiveTab] = useState('home')
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+      const currentItem = sidebarItems.find(item => item.path === location.pathname)
+      if (currentItem) {
+        setActiveTab(currentItem.id)
+      }
+    }, [location.pathname])
 
   // Sample data for charts
   const revenueData = [
@@ -45,14 +64,6 @@ export default function Page() {
     { stage: "Follow-up", value: 70, color: "#47d764" },
     { stage: "Conversion", value: 20, color: "#f5c542" },
     { stage: "Sale", value: 10, color: "#5ce1e6" },
-  ]
-
-  const sidebarItems = [
-    { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
-    { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
-    { id: "Logout", label: "Cerrar Sesión", icon: LogOut, path: "/", isLogout: true },
   ]
 
   return (

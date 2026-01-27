@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useRef } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users} from "lucide-react"
 import { 
   Upload, 
@@ -16,29 +16,39 @@ import {
   Settings,
   LogOut,
   Bell,
-  Search
+  Search,
+  Package
 } from 'lucide-react';
 import axios from 'axios';
 
 export default function UploadReceipt() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const [activeTab, setActiveTab] = useState('Upload')
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const location = useLocation()
   
 
   const sidebarItems = [
-    { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
-    { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
-    { id: "Logout", label: "Cerrar Sesión", icon: LogOut, path: "/", isLogout: true },
-  ]
+  { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
+  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
+  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
+  { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
+]
+
+  useEffect(() => {
+      const currentItem = sidebarItems.find(item => item.path === location.pathname)
+      if (currentItem) {
+        setActiveTab(currentItem.id)
+      }
+    }, [location.pathname])
 
   // Validar que el archivo sea PDF y no exceda 10MB
   const validateFile = (file) => {
@@ -187,6 +197,7 @@ export default function UploadReceipt() {
     }
   };
 
+
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
@@ -219,25 +230,7 @@ export default function UploadReceipt() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-        {/* Header */}
-        <header className="dashboard-header">
-          <nav className="dashboard-nav">
-            <button className="nav-link">Dashboard</button>
-            <button className="nav-link">Inventario</button>
-            <button className="nav-link">Boletas</button>
-          </nav>
-          <div className="dashboard-actions">
-            <button className="header-icon-btn">
-              <Search size={18} />
-            </button>
-            <button className="header-icon-btn">
-              <Bell size={18} />
-            </button>
-            <button className="user-avatar">
-              <span className="avatar-text">U</span>
-            </button>
-          </div>
-        </header>
+       
 
         {/* Content */}
         <div className="dashboard-content">
@@ -407,7 +400,7 @@ export default function UploadReceipt() {
 
                       <button
                         className="btn btn-primary btn-sm"
-                        onClick={() => navigate(`/receipts/${success.receiptId}/validate`)}
+                        onClick={() => navigate(`/validate-receipt/${success.receiptId}`)}
                       >
                         <FileCheck size={16} />
                         Ir a validar boleta

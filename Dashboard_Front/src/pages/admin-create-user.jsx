@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from 'axios'
 import { set } from "date-fns"
-import { useNavigate } from "react-router-dom"
-import { LayoutDashboard, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Upload } from "lucide-react"
+import { useNavigate, useLocation } from "react-router-dom"
+import { LayoutDashboard, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Upload, Package } from "lucide-react"
 import { is } from "date-fns/locale"
 
 // Iconos SVG como componentes
@@ -148,20 +148,22 @@ const LogOut = () => (
 )
 
   const sidebarItems = [
-    { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
-    { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
-    { id: "Logout", label: "Cerrar Sesión", icon: LogOut, path: "/", isLogout: true },
-  ]
+  { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
+  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
+  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
+  { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
+]
 
 
 export default function AdminCreateUser() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const [activeTab, setActiveTab] = useState('users')
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [formData, setFormData] = useState({
     username: "",
@@ -259,6 +261,13 @@ export default function AdminCreateUser() {
     setError("")
     setSuccess(false)
   }
+
+  useEffect(() => {
+      const currentItem = sidebarItems.find(item => item.path === location.pathname)
+      if (currentItem) {
+        setActiveTab(currentItem.id)
+      }
+    }, [location.pathname])
 
   
 

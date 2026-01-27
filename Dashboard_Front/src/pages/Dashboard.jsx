@@ -1,12 +1,21 @@
 import { MoreVertical, TrendingUp } from "lucide-react"
-import { useState } from "react"
-import { Link, Outlet, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, CreditCard, Calendar } from "lucide-react"
+import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Package } from "lucide-react"
 
 export function Dashboard() {
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const [activeTab, setActiveTab] = useState('home')
   const navigate = useNavigate()
+  const location = useLocation()
+
+
+  useEffect(() => {
+      const currentItem = sidebarItems.find(item => item.path === location.pathname)
+      if (currentItem) {
+        setActiveTab(currentItem.id)
+      }
+    }, [location.pathname])
   // Sample data for charts
   const revenueData = [
     { name: "Sep 01", revenue: 45000, leads: 50 },
@@ -54,12 +63,13 @@ export function Dashboard() {
 )
 
   const sidebarItems = [
-    { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
-    { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
-    { id: "Logout", label: "Cerrar Sesión", icon: LogOut, path: "/", isLogout: true },
-  ]
+  { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
+  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
+  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
+  { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
+]
 
   return (
     <div className="dashboard-page">

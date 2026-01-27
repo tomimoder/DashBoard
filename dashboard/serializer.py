@@ -44,6 +44,7 @@ class SystemLogSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Product
         fields = [
             'id',             # ID del producto (automático)
             'name',           # Nombre del producto

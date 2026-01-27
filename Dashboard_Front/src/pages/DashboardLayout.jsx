@@ -1,38 +1,30 @@
 "use client"
 
-import { useState } from "react"
-import { Link, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, CreditCard, Calendar } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom"
+import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Package, LogOut } from "lucide-react"
 
-
-export function DashboardLayout() {
-  const [activeTab, setActiveTab] = useState("dashboard")
-  const navigate = useNavigate()
-  const LogOut = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" x2="9" y1="12" y2="12" />
-  </svg>
-)
 
   const sidebarItems = [
-    { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
-    { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
-    { id: "Logout", label: "Cerrar Sesión", icon: LogOut, path: "/", isLogout: true },
-  ]
+  { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
+  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
+  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
+  { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
+]
+
+export function DashboardLayout() {
+  const [activeTab, setActiveTab] = useState('home')
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+      const currentItem = sidebarItems.find(item => item.path === location.pathname)
+      if (currentItem) {
+        setActiveTab(currentItem.id)
+      }
+    }, [location.pathname])
 
   return (
     <div className="dashboard-container">

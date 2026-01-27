@@ -5,6 +5,8 @@ import { Dashboard } from "./pages/dashboard.jsx"
 import { LoginPage } from "./pages/login.jsx"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import { UploadReceipt } from "./pages/UploadReceipt.jsx"
+import ValidateReceipt from "./pages/ValidateReceipt.jsx"
+import Inventory from "./pages/Inventory.jsx"
 import "./index.css"
 
 function App() {
@@ -15,6 +17,18 @@ function App() {
         <Route path="/create-user" element={
           <ProtectedRoute adminOnly>
             <AdminCreateUser />
+          </ProtectedRoute>
+          } />
+
+        <Route path="/validate-receipt/:id" element={
+          <ProtectedRoute adminOnly>
+            <ValidateReceipt />
+          </ProtectedRoute>
+          } />
+
+        <Route path="/inventory" element={
+          <ProtectedRoute>
+            <Inventory />
           </ProtectedRoute>
           } />
 

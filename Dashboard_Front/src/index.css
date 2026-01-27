@@ -1594,3 +1594,32 @@ body:has(.login-container) {
     width: 100%;
   }
 }
+
+body:has(.dashboard-container) {
+  padding: 0 !important;
+  display: block !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+
+.dashboard-main {
+  flex: 1;
+  margin-left: 80px;
+  width: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.dashboard-page,
+.upload-page {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}

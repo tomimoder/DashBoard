@@ -1,14 +1,14 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .serializer import UserSerializer, CategorySerializer, SaleSerializer, SystemLogSerializer, ProductSerializer, ReceiptItemSerializer, ReceiptSerializer, StockMovementSerializer
 from .models import Product, Receipt, ReceiptItem, StockMovement, User, Category, Sale, SystemLog
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 from django.contrib.auth.hashers import check_password
 from rest_framework.decorators import action
 from django.db.models import Q
 from .services.pdf_processor import PDFProcessor
-
+from django.db import transaction
+from django.utils import timezone
 # Create your views here.
 
 class UserView(viewsets.ModelViewSet):
@@ -68,30 +68,39 @@ class ReceiptItemView(viewsets.ModelViewSet):
     def validate_item(self, request, pk=None):
         """Validar un item individual"""
         item = self.get_object()
-        
-        # Actualizar con las correcciones del usuario
-        item.corrected_product_name = request.data.get(
-            'corrected_product_name', 
-            item.corrected_product_name
-        )
-        item.corrected_quantity = request.data.get(
-            'corrected_quantity', 
-            item.corrected_quantity
-        )
-        item.matched_product_id = request.data.get(
-            'matched_product_id',
-            item.matched_product_id
-        )
-        item.validation_notes = request.data.get(
-            'validation_notes',
-            item.validation_notes
-        )
-        
+
+        # Obtener datos del request
+        matched_product_id = request.data.get('matched_product_id')
+        if matched_product_id:
+            try:
+                product = Product.objects.get(id=matched_product_id)
+                item.matched_product = product
+                item.confidence_score = 100.0
+            except Product.DoesNotExist:
+                return Response(
+                    {"error": "Product not found."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+        # Actualizar correcciones
+        if 'corrected_product_name' in request.data:
+            item.corrected_product_name = request.data['corrected_product_name']
+        if 'corrected_quantity' in request.data:
+            item.corrected_quantity = request.data['corrected_quantity']
+        if 'validation_notes' in request.data:
+            item.validation_notes = request.data['validation_notes']
+
+        # Marcar como valido
         item.is_validated = True
         item.needs_review = False
         item.save()
-        
-        return Response(ReceiptItemSerializer(item).data)
+
+        return Response(
+            ReceiptItemSerializer(item).data,
+            status=status.HTTP_200_OK
+        )
+
+
 
 
 class ReceiptView(viewsets.ModelViewSet):
@@ -171,10 +180,98 @@ class ReceiptView(viewsets.ModelViewSet):
     def validate(self, request, pk=None):
         """Validar una boleta completa"""
         receipt = self.get_object()
+        
+        unvalidated = receipt.items.filter(is_validated=False).count()
+
+        if unvalidated > 0:
+            return Response(
+                {"error": "Hay items sin validar."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         receipt.status = 'validated'
         receipt.save()
-        
         return Response(ReceiptSerializer(receipt).data)
+    
+    @action(detail=True, methods=['post'])
+    def apply_to_inventory(self, request, pk=None):
+        # Aplicar una boleta valida al inventario
+
+        receipt = self.get_object()
+
+        if receipt.status != 'validated':
+            return Response(
+                {"error": "La boleta debe estar validada para aplicar al inventario."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if receipt.items.filter(is_validated=False).exists():
+            return Response(
+                {"error": "Todos los items deben estar validados."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            with transaction.atomic():
+                applied_items = []
+
+                for item in receipt.items.all():
+                    product = item.matched_product
+
+                    if not product:
+                        return Response(
+                            {"error": f"El item {item.id} no tiene un producto asociado."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
+                    quantity = item.corrected_quantity if item.corrected_quantity else item.detected_quantity
+
+                    if not quantity or quantity <= 0:
+                        return Response(
+                            {"error": f"El item {item.id} tiene una cantidad inválida."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
+                    previous_stock = product.current_stock
+
+                    product.current_stock += int(quantity)
+                    product.save()
+
+                    # Crear movimiento de stock
+                    StockMovement.objects.create(
+                        product=product,
+                        receipt_item=item,
+                        movement_type='receipt',
+                        quantity=quantity,
+                        previous_stock=previous_stock,
+                        new_stock=product.current_stock,
+                        created_by=receipt.user,
+                        notes=f'Entrada por boleta #{receipt.id} - {receipt.supplier or "Sin proveedor"}'
+                    )
+                    
+                    applied_items.append({
+                        'product': product.name,
+                        'quantity': str(quantity),
+                        'previous_stock': previous_stock,
+                        'new_stock': product.current_stock
+                    })
+                
+                # Marcar como completada
+                receipt.status = 'completed'
+                receipt.save()
+
+                return Response({
+                    'success': True,
+                    'message': f'Se aplicaron {len(applied_items)} productos al inventario',
+                    'applied_items': applied_items,
+                    'receipt': ReceiptSerializer(receipt).data
+                }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Error al aplicar al inventario: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
