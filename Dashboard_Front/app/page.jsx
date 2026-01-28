@@ -18,12 +18,13 @@ import { useNavigate, useLocation } from "react-router-dom"
 
 const sidebarItems = [
   { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" },
+  { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
+  { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
-]
+];
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState('home')

@@ -21,6 +21,10 @@ import {
   CheckCircle,
   Plus,
   Save,
+  ShoppingCart,
+  Trash,
+  Minus,
+  Check,
 } from 'lucide-react';
 import { LayoutDashboard, Users } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast';
@@ -101,7 +105,8 @@ export default function ValidateReceipt() {
       ...item,
       corrected_product_name: item.corrected_product_name || item.detected_product_name,
       corrected_quantity: item.corrected_quantity || item.detected_quantity,
-      matched_product_id: item.matched_product?.id || null
+      matched_product_id: item.matched_product?.id || null,
+      price: item.matched_product?.price || 0
     })
   }
 
@@ -119,7 +124,8 @@ export default function ValidateReceipt() {
           corrected_product_name: editingItem.corrected_product_name,
           corrected_quantity: editingItem.corrected_quantity,
           matched_product_id: editingItem.matched_product_id,
-          validation_notes: editingItem.validation_notes
+          validation_notes: editingItem.validation_notes,
+          price: editingItem.price
         }
       )
 
@@ -153,6 +159,11 @@ export default function ValidateReceipt() {
   const createNewProduct = async () => {
     if (!newProduct.name.trim()) {
       toast.warning('El nombre del producto es obligatorio')
+      return
+    }
+
+    if (!newProduct.price || newProduct.price <= 0) {
+      toast.warning('El precio del producto debe ser mayor a cero')
       return
     }
 
@@ -241,11 +252,12 @@ export default function ValidateReceipt() {
   const sidebarItems = [
     { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
     { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" },
+    { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
+    { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
     { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
     { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
     { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
-  ]
+  ];
 
   // ============================================================================
   // RENDER - LOADING
@@ -629,7 +641,33 @@ export default function ValidateReceipt() {
                             }}
                           />
                         </div>
-
+                        {/*PRECIO */}
+                        <div>
+                          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                            Precio Unitario: *
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={editingItem.price}
+                            onChange={(e) => setEditingItem({
+                              ...editingItem,
+                              price: parseFloat(e.target.value) || 0
+                            })}
+                            placeholder="Ej: 1500"
+                            required
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.5rem'
+                            }}
+                          />
+                          <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                            Campo obligatorio
+                          </small>
+                        </div>
                         {/* Notas */}
                         <div>
                           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
@@ -656,7 +694,7 @@ export default function ValidateReceipt() {
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button
                           onClick={() => saveItem(item.id)}
-                          disabled={saving}
+                          disabled={saving || !editingItem.price || editingItem.price <= 0}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -973,6 +1011,30 @@ export default function ValidateReceipt() {
                       }}
                     />
                   </div>
+                  {/* Precio - AHORA OBLIGATORIO */}
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                      Precio Unitario *
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={newProduct.price}
+                      onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })}
+                      placeholder="Ej: 1500"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '0.5rem'
+                      }}
+                    />
+                    <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                      Campo obligatorio
+                    </small>
+                  </div>
 
                   {/* Unidad */}
                   <div>
@@ -1030,7 +1092,7 @@ export default function ValidateReceipt() {
                 }}>
                   <button
                     onClick={createNewProduct}
-                    disabled={creatingProduct || !newProduct.name}
+                    disabled={creatingProduct || !newProduct.name || !newProduct.price || newProduct.price <= 0}
                     style={{
                       flex: 1,
                       padding: '0.75rem',

@@ -17,7 +17,11 @@ import {
   LogOut,
   Bell,
   Search,
-  Package
+  Package,
+  CreditCard,
+  Calendar,
+  ShoppingCart,
+  Check
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -36,12 +40,13 @@ export default function UploadReceipt() {
 
   const sidebarItems = [
   { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" },
+  { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
+  { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
-]
+];
 
   useEffect(() => {
       const currentItem = sidebarItems.find(item => item.path === location.pathname)

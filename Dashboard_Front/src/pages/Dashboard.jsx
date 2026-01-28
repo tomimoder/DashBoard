@@ -2,12 +2,15 @@ import { MoreVertical, TrendingUp } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Package } from "lucide-react"
+import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Package, ShoppingCart } from "lucide-react"
+import axios from "axios"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState('home')
   const navigate = useNavigate()
   const location = useLocation()
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(false)
 
 
   useEffect(() => {
@@ -64,12 +67,31 @@ export function Dashboard() {
 
   const sidebarItems = [
   { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
-  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" }, 
+  { id: "inventory", label: "Inventario", icon: Package, path: "/inventory" },
+  { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
+  { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "Upload", label: "Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
-]
+];
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get('http://127.0.0.1:8000/api/v1/products/')
+      setProducts(response.data)
+    } catch (error) {
+      console.error('Error al cargar productos:', error)
+      alert('Error al cargar el inventario')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Cargar productos
+  useEffect(() => {
+    loadProducts()
+  }, [])
 
   return (
     <div className="dashboard-page">
@@ -112,49 +134,31 @@ export function Dashboard() {
       <div className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-header">
-            <h3 className="kpi-title">Total customers</h3>
-            <button className="kpi-menu">
-              <MoreVertical size={16} />
-            </button>
+            <h3 className="kpi-title">Productos Totales</h3>
           </div>
           <div className="kpi-content">
-            <div className="kpi-value">2,120</div>
-            <div className="kpi-badge positive">
-              <TrendingUp size={14} />
-              <span>20%</span>
+            <div className="kpi-value">{products.length}</div>
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-header">
+            <h3 className="kpi-title">Stock Bajo</h3>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-value" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>
+              {products.filter(p => p.current_stock < 20).length}
             </div>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <h3 className="kpi-title">Members</h3>
-            <button className="kpi-menu">
-              <MoreVertical size={16} />
-            </button>
+            <h3 className="kpi-title">Stock Total</h3>
           </div>
           <div className="kpi-content">
-            <div className="kpi-value">1,220</div>
-            <div className="kpi-badge positive">
-              <TrendingUp size={14} />
-              <span>15%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-header">
-            <h3 className="kpi-title">Active now</h3>
-            <button className="kpi-menu">
-              <MoreVertical size={16} />
-            </button>
-          </div>
-          <div className="kpi-content">
-            <div className="kpi-value">316</div>
-            <div className="active-avatars">
-              <div className="avatar avatar-sm">A</div>
-              <div className="avatar avatar-sm">B</div>
-              <div className="avatar avatar-sm">C</div>
+            <div className="kpi-value" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
+              {products.reduce((sum, p) => sum + p.current_stock, 0)}
             </div>
           </div>
         </div>

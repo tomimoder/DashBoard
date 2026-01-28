@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
-from .serializer import UserSerializer, CategorySerializer, SaleSerializer, SystemLogSerializer, ProductSerializer, ReceiptItemSerializer, ReceiptSerializer, StockMovementSerializer
-from .models import Product, Receipt, ReceiptItem, StockMovement, User, Category, Sale, SystemLog
+from .serializer import SaleDetailSerializer, SaleItemReadSerializer, UserSerializer, CategorySerializer, SaleSerializer, SystemLogSerializer, ProductSerializer, ReceiptItemSerializer, ReceiptSerializer, StockMovementSerializer, SaleSerializer, SaleListSerializer 
+from .models import Product, Receipt, ReceiptItem, StockMovement, User, Category, Sale, SystemLog, SaleItem
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
@@ -20,8 +20,109 @@ class CategoryView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
 
 class SaleView(viewsets.ModelViewSet):
-    serializer_class = SaleSerializer
     queryset = Sale.objects.all()
+
+    def get_serializer_class(self):
+
+        if self.action == 'list':
+            return SaleListSerializer
+        return SaleSerializer
+    
+    def get_queryset(self):
+        """Permite filtrar ventas por usuario y fecha"""
+        queryset = super().get_queryset()
+
+        # Filtro por fecha desde
+        date_from = self.request.query_params.get('date_from', None)
+        if date_from:
+            queryset = queryset.filter(created_at__gte = date_from)
+
+        # Filtro por fecha hasta
+        date_to = self.request.query_params.get('date_to', None)
+        if date_to:
+            queryset = queryset.filter(created_at__lte = date_to)
+
+        # Filtro por método de pago
+        payment_method = self.request.query_params.get('payment_method', None)
+        if payment_method:
+            queryset =queryset.filter(payment_method = payment_method)
+
+        return queryset.order_by('-created_at')
+    
+    def create(self, request, *args, **kwargs):
+        """Crear una nueva venta"""
+        serializer = SaleSerializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            sale = serializer.save()
+
+            return Response(
+                SaleSerializer(sale).data,
+                status = status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status = status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+
+    @action(detail = False, methods = ['get'])
+    def stats(self, request):
+        # Obtener estadísticas de ventas
+
+        from django.db.models import Count, Sum, Avg
+        from datetime import timedelta, datetime
+
+        # Ventas del día
+        today = datetime.now().date()
+        today_sales = Sale.objects.filter(created_at__date = today)
+
+        # Ventas del mes
+        month_start = datetime.now().replace(day = 1).date()
+        month_sales = Sale.objects.filter(created_at__date__gte = month_start)
+
+        stats = {
+            'today': {
+                'count': today_sales.count(),
+                'total': today_sales.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+            },
+            'this_month': {
+                'count': month_sales.count(),
+                'total': month_sales.aggregate(Sum('total_amount'))['total_amount__sum'] or 0,
+                'average': month_sales.aggregate(Avg('total_amount'))['total_amount__avg'] or 0
+            },
+            'payment_methods': dict(
+                Sale.objects.values('payment_method').annotate(
+                    count=Count('id'),
+                    total=Sum('total_amount')
+                ).values_list('payment_method', 'total')
+            )
+        }
+
+        return Response(stats)
+
+class SaleItemView(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SaleItemReadSerializer 
+    queryset = SaleItem.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        product_id = self.request.query_params.get('product', None)
+        if product_id:
+            queryset = queryset.filter(product_id=product_id)
+
+        return queryset.order_by('-sale__created_at')
+
 
 class SystemLogView(viewsets.ModelViewSet):
     serializer_class = SystemLogSerializer
@@ -99,6 +200,7 @@ class ReceiptItemView(viewsets.ModelViewSet):
             ReceiptItemSerializer(item).data,
             status=status.HTTP_200_OK
         )
+
 
 
 
@@ -387,3 +489,6 @@ def login(request):
             {"error": "user not found."},
             status=status.HTTP_404_NOT_FOUND
         )
+
+
+

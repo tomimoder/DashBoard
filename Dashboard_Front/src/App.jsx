@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import { UploadReceipt } from "./pages/UploadReceipt.jsx"
 import ValidateReceipt from "./pages/ValidateReceipt.jsx"
 import Inventory from "./pages/Inventory.jsx"
+import RegisterSale from "./pages/RegisterSale.jsx"
 import "./index.css"
 
 function App() {
@@ -54,6 +55,12 @@ function App() {
             <Dashboard />
           </ProtectedRoute>
           } />
+
+        <Route path="/register-sale" element={
+        <ProtectedRoute>
+          <RegisterSale />
+        </ProtectedRoute>
+      } />
       </Routes>
   )
 }
