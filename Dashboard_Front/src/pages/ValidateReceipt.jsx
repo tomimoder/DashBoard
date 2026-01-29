@@ -101,14 +101,37 @@ export default function ValidateReceipt() {
   // ============================================================================
 
   const startEditItem = (item) => {
+  setEditingItem({
+    ...item,
+    corrected_product_name: item.corrected_product_name || item.detected_product_name,
+    corrected_quantity: item.corrected_quantity || item.detected_quantity,
+    matched_product_id: item.matched_product?.id || null,
+    price: item.matched_product?.price || item.price || 0
+  })
+}
+
+const handleProductChange = (productId) => {
+  if (productId) {
+    // Buscar el producto seleccionado
+    const selectedProduct = products.find(p => p.id === parseInt(productId))
+    
+    if (selectedProduct) {
+      // Actualizar automáticamente nombre y precio
+      setEditingItem({
+        ...editingItem,
+        matched_product_id: parseInt(productId),
+        corrected_product_name: selectedProduct.name,
+        price: parseFloat(selectedProduct.price)
+      })
+    }
+  } else {
+    // Si deselecciona el producto
     setEditingItem({
-      ...item,
-      corrected_product_name: item.corrected_product_name || item.detected_product_name,
-      corrected_quantity: item.corrected_quantity || item.detected_quantity,
-      matched_product_id: item.matched_product?.id || null,
-      price: item.matched_product?.price || 0
+      ...editingItem,
+      matched_product_id: null
     })
   }
+}
 
   const cancelEdit = () => {
     setEditingItem(null)
@@ -255,7 +278,6 @@ export default function ValidateReceipt() {
     { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
     { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
     { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-    { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
     { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
   ];
 
@@ -318,7 +340,7 @@ export default function ValidateReceipt() {
 
         {/* HEADER */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: "#ffffff" }}>
             <Package />
             Validar Boleta #{receipt.id}
           </h1>
@@ -329,11 +351,12 @@ export default function ValidateReceipt() {
             gap: '1rem',
             marginTop: '1rem',
             padding: '1rem',
-            backgroundColor: '#f3f4f6',
+            backgroundColor: "#1f2235",
+            border: "1px solid #2a2e45",
             borderRadius: '0.5rem'
           }}>
             <div>
-              <strong>Estado:</strong>
+              <strong style = {{ color: "#ffffff" }}>Estado:</strong>
               <span style={{
                 marginLeft: '0.5rem',
                 padding: '0.25rem 0.5rem',
@@ -348,25 +371,25 @@ export default function ValidateReceipt() {
             </div>
 
             {receipt.supplier && (
-              <div>
-                <strong>Proveedor:</strong> {receipt.supplier}
+              <div style = {{ color: "#ffffff" }}>
+                <strong style = {{ color: "#ffffff" }}>Proveedor:</strong> {receipt.supplier}
               </div>
             )}
 
             {receipt.receipt_date && (
               <div>
-                <strong>Fecha:</strong> {receipt.receipt_date}
+                <strong >Fecha:</strong> {receipt.receipt_date}
               </div>
             )}
 
-            <div>
-              <strong>Items:</strong> {items.length}
+            <div style = {{ color: "#ffffff" }}>
+              <strong style = {{ color: "#ffffff" }}>Items:</strong> {items.length}
             </div>
           </div>
         </div>
 
         {/* LISTA DE ITEMS */}
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '2rem', color: "#ffffff"}}>
           <h2>Productos Detectados</h2>
 
           {items.length === 0 ? (
@@ -387,7 +410,8 @@ export default function ValidateReceipt() {
                     border: `2px solid ${item.needs_review ? '#f59e0b' : item.is_validated ? '#10b981' : '#d1d5db'}`,
                     borderRadius: '0.5rem',
                     padding: '1.5rem',
-                    backgroundColor: '#fff'
+                    backgroundColor: "#1f2235",
+                    border: "1px solid #2a2e45",
                   }}
                 >
                   {/* Header del Item */}
@@ -574,25 +598,24 @@ export default function ValidateReceipt() {
 
                         {/* Selector de Producto */}
                         <div>
-                          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold'}}>
                             Producto:
                           </label>
                           <select
                             value={editingItem.matched_product_id || ''}
-                            onChange={(e) => setEditingItem({
-                              ...editingItem,
-                              matched_product_id: e.target.value ? parseInt(e.target.value) : null
-                            })}
+                            onChange={(e) => handleProductChange(e.target.value)}
                             style={{
                               width: '100%',
                               padding: '0.5rem',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '0.5rem'
+                              borderRadius: '0.5rem',
+                              backgroundColor: "#1f2235", 
+                              border: "1px solid #2a2e45",
+                              color: "#ffffff" 
                             }}
                           >
-                            <option value="">-- Seleccionar producto --</option>
+                            <option style={{ color: "#ffffff" }} value="">-- Seleccionar producto --</option>
                             {products.map(product => (
-                              <option key={product.id} value={product.id}>
+                              <option style={{ color: "#ffffff" }} key={product.id} value={product.id}>
                                 {product.name} (Stock: {product.current_stock})
                               </option>
                             ))}
@@ -614,8 +637,10 @@ export default function ValidateReceipt() {
                             style={{
                               width: '100%',
                               padding: '0.5rem',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '0.5rem'
+                              backgroundColor: "#1f2235", 
+                              border: "1px solid #2a2e45",
+                              borderRadius: '0.5rem',
+                              color: "#ffffff" 
                             }}
                           />
                         </div>
@@ -636,7 +661,9 @@ export default function ValidateReceipt() {
                             style={{
                               width: '100%',
                               padding: '0.5rem',
-                              border: '1px solid #d1d5db',
+                              backgroundColor: "#1f2235", 
+                              border: "1px solid #2a2e45",
+                              color: "#ffffff",
                               borderRadius: '0.5rem'
                             }}
                           />
@@ -660,7 +687,9 @@ export default function ValidateReceipt() {
                             style={{
                               width: '100%',
                               padding: '0.5rem',
-                              border: '1px solid #d1d5db',
+                              backgroundColor: "#1f2235", 
+                              border: "1px solid #2a2e45",
+                              color: "#ffffff",
                               borderRadius: '0.5rem'
                             }}
                           />
@@ -683,7 +712,9 @@ export default function ValidateReceipt() {
                             style={{
                               width: '100%',
                               padding: '0.5rem',
-                              border: '1px solid #d1d5db',
+                              backgroundColor: "#1f2235", 
+                              border: "1px solid #2a2e45",
+                              color: "#ffffff",
                               borderRadius: '0.5rem'
                             }}
                           />

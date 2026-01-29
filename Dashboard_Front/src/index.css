@@ -569,7 +569,7 @@ body {
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1a1d2e;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -591,7 +591,8 @@ body {
 }
 
 .card-header {
-  background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+  background-color: #1a1d29;
+  border: 1px solid #2a2e45;
   color: var(--primary-foreground);
   padding: 2rem;
 }
@@ -609,6 +610,8 @@ body {
 
 .card-content {
   padding: 2rem;
+  background-color: #1f2235;
+  border: 1px solid #2a2e45;
 }
 
 /* Form Sections */
@@ -643,6 +646,7 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+  color: #ffffff;
 }
 
 @media (min-width: 768px) {
@@ -660,6 +664,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  color: #ffffff;
 }
 
 .form-group.full-width {
@@ -670,7 +675,7 @@ body {
 .label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--foreground);
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -678,6 +683,10 @@ body {
 
 .label .required {
   color: var(--destructive);
+}
+
+input::placeholder {
+  color: #fff;
 }
 
 /* Input */
@@ -700,11 +709,11 @@ body {
   width: 100%;
   padding: 0.625rem 0.75rem;
   padding-left: 2.5rem;
-  border: 1px solid var(--input);
   border-radius: calc(var(--radius) - 0.25rem);
   font-size: 0.875rem;
-  background-color: var(--card);
-  color: var(--foreground);
+  background-color: #1f2235;
+  border: 1px solid #2a2e45;
+  color: #ffffff;
   transition: all 0.2s;
 }
 
@@ -797,7 +806,7 @@ body {
 }
 
 .button-outline:hover:not(:disabled) {
-  background-color: var(--secondary);
+  background-color: #3a3639;
 }
 
 .button-primary {
@@ -1623,3 +1632,4 @@ body:has(.dashboard-container) {
   width: 100%;
   margin: 0 auto;
 }
+

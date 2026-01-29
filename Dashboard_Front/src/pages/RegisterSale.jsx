@@ -28,6 +28,7 @@ import {
   Check,
   Users,
 } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 
 // ============================================================================
 // SIDEBAR ITEMS
@@ -39,7 +40,6 @@ const sidebarItems = [
   { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
   { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
 ];
 
@@ -139,7 +139,7 @@ export default function RegisterSale() {
     const product = cart.find(item => item.product.id === productId)?.product
     
     if (product && newQuantity > product.current_stock) {
-      alert(`Stock insuficiente. Disponible: ${product.current_stock}`)
+      toast.warning(`Stock insuficiente. Disponible: ${product.current_stock}`)
       return
     }
     
@@ -178,7 +178,7 @@ export default function RegisterSale() {
   
   const handleRegisterSale = async () => {
     if (cart.length === 0) {
-      alert('El carrito está vacío')
+      toast.warning('El carrito está vacío')
       return
     }
     
@@ -193,7 +193,7 @@ export default function RegisterSale() {
       const userData = JSON.parse(localStorage.getItem('user'))
       
       if (!userData || !userData.id) {
-        alert('Error: Usuario no encontrado. Por favor inicia sesión de nuevo.')
+        toast.error('Error: Usuario no encontrado. Por favor inicia sesión de nuevo.')
         navigate('/')
         return
       }
@@ -218,7 +218,7 @@ export default function RegisterSale() {
       )
       
       // Éxito
-      alert(`✅ Venta registrada exitosamente\nTotal: $${calculateTotal().toLocaleString('es-CL')}`)
+      toast.success(`✅ Venta registrada exitosamente\nTotal: $${calculateTotal().toLocaleString('es-CL')}`)
       
       // Limpiar formulario
       setCart([])
@@ -233,9 +233,9 @@ export default function RegisterSale() {
       console.error('Error al registrar venta:', error)
       
       if (error.response?.data?.error) {
-        alert(`❌ Error: ${error.response.data.error}`)
+        toast.error(`❌ Error: ${error.response.data.error}`)
       } else {
-        alert('❌ Error al registrar la venta')
+        toast.error('❌ Error al registrar la venta')
       }
     } finally {
       setProcessing(false)
@@ -248,7 +248,7 @@ export default function RegisterSale() {
   
   return (
     <div className="dashboard-container">
-      
+      <Toaster position="top-right" />
       {/* SIDEBAR */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-content">
@@ -285,15 +285,15 @@ export default function RegisterSale() {
               <ShoppingCart />
               Punto de Venta
             </h1>
-            <p style={{ color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+            <p style={{ color: '#fff', margin: '0.5rem 0 0 0' }}>
               Busca productos y agrégalos al carrito para registrar una venta
             </p>
           </div>
           
           {/* BUSCADOR DE PRODUCTOS */}
           <div style={{
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
+            backgroundColor: '#1f2235',
+            border: '1px solid #2a2e45',
             borderRadius: '0.5rem',
             padding: '1.5rem',
             marginBottom: '2rem'
@@ -301,14 +301,14 @@ export default function RegisterSale() {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
               Buscar Producto
             </label>
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative'  }}>
               <Search style={{
                 position: 'absolute',
                 left: '1rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: '#9ca3af',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
               }} size={20} />
               <input
                 type="text"
@@ -318,9 +318,11 @@ export default function RegisterSale() {
                 style={{
                   width: '100%',
                   padding: '0.75rem 1rem 0.75rem 3rem',
-                  border: '1px solid #d1d5db',
+                  backgroundColor: '#1f2235',
+                  border: '1px solid #2a2e45',
                   borderRadius: '0.5rem',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  color: '#fff',
                 }}
               />
             </div>
@@ -332,7 +334,8 @@ export default function RegisterSale() {
                 maxHeight: '300px',
                 overflowY: 'auto',
                 border: '1px solid #e5e7eb',
-                borderRadius: '0.5rem'
+                borderRadius: '0.5rem',
+                
               }}>
                 {searching ? (
                   <div style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>
@@ -350,21 +353,21 @@ export default function RegisterSale() {
                       style={{
                         width: '100%',
                         padding: '1rem',
-                        border: 'none',
-                        borderBottom: '1px solid #e5e7eb',
-                        backgroundColor: '#fff',
+                        borderBottom: '1px solid #2a2e45',
+                        backgroundColor: '#1f2235',
+                        border: '1px solid #2a2e45',
                         cursor: 'pointer',
                         textAlign: 'left',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#080b1f'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1f2235'}
                     >
                       <div>
-                        <div style={{ fontWeight: '500' }}>{product.name}</div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        <div style={{ fontWeight: '500', color: '#fff' }}>{product.name}</div>
+                        <div style={{ fontSize: '0.875rem', color: '#8b92b2', fontWeight: '500' }}>
                           SKU: {product.sku || 'N/A'} | Stock: {product.current_stock}
                         </div>
                       </div>
@@ -380,8 +383,8 @@ export default function RegisterSale() {
           
           {/* CARRITO */}
           <div style={{
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
+            backgroundColor: '#1f2235',
+            border: '1px solid #2a2e45',
             borderRadius: '0.5rem',
             padding: '1.5rem',
             marginBottom: '2rem'
@@ -444,11 +447,11 @@ export default function RegisterSale() {
                         <tr key={item.product.id} style={{ borderTop: '1px solid #000000' }}>
                           <td style={{ padding: '1rem' }}>
                             <div style={{ fontWeight: '500' }}>{item.product.name}</div>
-                            <div style={{ fontSize: '0.875rem', color: '#000000' }}>
+                            <div style={{ fontSize: '0.875rem', color: '#ffffff' }}>
                               Stock disponible: {item.product.current_stock}
                             </div>
                           </td>
-                          <td style={{ padding: '1rem', textAlign: 'center', color: '#000000', fontWeight: 'bold' }}>
+                          <td style={{ padding: '1rem', textAlign: 'center', color: '#ffffff', fontWeight: 'bold' }}>
                             ${item.unit_price.toLocaleString('es-CL')}
                           </td>
                           <td style={{ padding: '1rem' }}>
@@ -471,7 +474,7 @@ export default function RegisterSale() {
                                 textAlign: 'center',
                                 fontSize: '1.125rem',
                                 fontWeight: 'bold',
-                                color: '#000000'
+                                color: '#ffffff'
                               }}>
                                 {item.quantity}
                               </span>
@@ -491,7 +494,7 @@ export default function RegisterSale() {
                               </button>
                             </div>
                           </td>
-                          <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '1.125rem', color: '#000000' }}>
+                          <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '1.125rem', color: '#ffffff' }}>
                             ${calculateSubtotal(item).toLocaleString('es-CL')}
                           </td>
                           <td style={{ padding: '1rem', textAlign: 'center' }}>
@@ -538,9 +541,11 @@ export default function RegisterSale() {
                         style={{
                           width: '100%',
                           padding: '0.75rem',
-                          border: '1px solid #d1d5db',
+                          backgroundColor: '#1f2235',
+                          border: '1px solid #2a2e45',
                           borderRadius: '0.5rem',
-                          fontSize: '1rem'
+                          fontSize: '1rem',
+                          color: '#fff'
                         }}
                       >
                         <option value="cash">Efectivo</option>
@@ -562,9 +567,11 @@ export default function RegisterSale() {
                         style={{
                           width: '100%',
                           padding: '0.75rem',
-                          border: '1px solid #d1d5db',
+                          backgroundColor: '#1f2235',
+                          border: '1px solid #2a2e45',
                           borderRadius: '0.5rem',
-                          fontSize: '1rem'
+                          fontSize: '1rem',
+                          color: '#fff'
                         }}
                       />
                     </div>
@@ -576,7 +583,8 @@ export default function RegisterSale() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '1rem',
-                    backgroundColor: '#f9fafb',
+                    backgroundColor: '#1f2235',
+                  border: '1px solid #2a2e45',
                     borderRadius: '0.5rem',
                     marginBottom: '1rem'
                   }}>
@@ -632,14 +640,14 @@ export default function RegisterSale() {
           padding: '1rem'
         }}>
           <div style={{
-            backgroundColor: '#fff',
+            backgroundColor: '#1f2235',
             borderRadius: '0.5rem',
             maxWidth: '500px',
             width: '100%',
             padding: '2rem',
             color: '#000000'
           }}>
-            <h2 style={{ margin: '0 0 1rem 0' }}>Confirmar Venta</h2>
+            <h2 style={{ margin: '0 0 1rem 0', color: '#fff' }}>Confirmar Venta</h2>
             
             <div style={{ marginBottom: '1rem' }}>
               <div style={{ 
@@ -647,7 +655,7 @@ export default function RegisterSale() {
                 justifyContent: 'space-between',
                 padding: '0.5rem 0',
                 borderBottom: '1px solid #e5e7eb',
-                color: '#000000'
+                color: '#ffffff'
               }}>
                 <span>Productos:</span>
                 <strong>{cart.length}</strong>
@@ -656,7 +664,8 @@ export default function RegisterSale() {
                 display: 'flex', 
                 justifyContent: 'space-between',
                 padding: '0.5rem 0',
-                borderBottom: '1px solid #e5e7eb'
+                borderBottom: '1px solid #e5e7eb',
+                color: '#ffffff'
               }}>
                 <span>Método de pago:</span>
                 <strong>
@@ -677,7 +686,7 @@ export default function RegisterSale() {
               </div>
             </div>
             
-            <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
+            <p style={{color: '#8b92b2', fontWeight: '500', marginBottom: '1.5rem' }}>
               ¿Confirmar el registro de esta venta? El stock se reducirá automáticamente.
             </p>
             

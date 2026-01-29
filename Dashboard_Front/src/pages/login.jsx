@@ -32,8 +32,6 @@ export default function LoginPage() {
 
         // Redirigir segun el rol del usuario 
         if (response.data.user.role === true) {
-            navigate('/create-user')
-        } else {
             navigate('/dashboard')
         }
 

@@ -4,148 +4,10 @@ import { useState, useEffect } from "react"
 import axios from 'axios'
 import { set } from "date-fns"
 import { useNavigate, useLocation } from "react-router-dom"
-import { LayoutDashboard, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Upload, Package, ShoppingCart } from "lucide-react"
+import { LayoutDashboard, Users, FileText, Settings, Search, Bell, CreditCard, Calendar, Upload, Package, ShoppingCart, UserPlus, Mail, User, Lock, Shield, CheckCircle2, XCircle, LogOut} from "lucide-react"
 import { is } from "date-fns/locale"
 
-// Iconos SVG como componentes
-const UserPlus = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <line x1="19" x2="19" y1="8" y2="14" />
-    <line x1="22" x2="16" y1="11" y2="11" />
-  </svg>
-)
 
-const Mail = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect width="20" height="16" x="2" y="4" rx="2" />
-    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-  </svg>
-)
-
-const User = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-)
-
-const Lock = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-)
-
-const Shield = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-  </svg>
-)
-
-const CheckCircle2 = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="m9 12 2 2 4-4" />
-  </svg>
-)
-
-const XCircle = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="m15 9-6 6" />
-    <path d="m9 9 6 6" />
-  </svg>
-)
-
-const LogOut = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" x2="9" y1="12" y2="12" />
-  </svg>
-)
 
  const sidebarItems = [
   { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
@@ -153,7 +15,6 @@ const LogOut = () => (
   { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
   { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
 ];
 
@@ -336,8 +197,8 @@ export default function AdminCreateUser() {
 
           {/* Sección: Información de Cuenta */}
           <div className="form-section">
-            <h3 className="section-title">
-              <User className="section-icon" />
+            <h3 className="section-title" style={{ color: "#ffff" }}>
+              <User className="section-icon" style={{ color: "#ffff" }}/>
               Información de Cuenta
             </h3>
 
@@ -347,7 +208,7 @@ export default function AdminCreateUser() {
                   Nombre de usuario <span className="required">*</span>
                 </label>
                 <div className="input-wrapper">
-                  <User className="input-icon" />
+                  <User className="input-icon" style={{ color: "#ffff" }} />
                   <input
                     id="username"
                     name="username"
@@ -372,7 +233,7 @@ export default function AdminCreateUser() {
                   Email <span className="required">*</span>
                 </label>
                 <div className="input-wrapper">
-                  <Mail className="input-icon" />
+                  <Mail className="input-icon" style={{ color: "#ffff" }}/>
                   <input
                     id="email"
                     name="email"
@@ -396,8 +257,8 @@ export default function AdminCreateUser() {
 
           {/* Sección: Seguridad */}
           <div className="form-section">
-            <h3 className="section-title">
-              <Lock className="section-icon" />
+            <h3 className="section-title" style={{ color: "#ffff" }}>
+              <Lock className="section-icon" style={{ color: "#ffff" }}/>
               Seguridad
             </h3>
 
@@ -407,7 +268,7 @@ export default function AdminCreateUser() {
                   Contraseña <span className="required">*</span>
                 </label>
                 <div className="input-wrapper">
-                  <Lock className="input-icon" />
+                  <Lock className="input-icon" style={{ color: "#ffff" }}/>
                   <input
                     id="password"
                     name="password"
@@ -434,8 +295,8 @@ export default function AdminCreateUser() {
             <label htmlFor="role" className="label">
               Rol del usuario
             </label>
-            <div className="input-wrapper">
-              <Shield className="input-icon" />
+            <div className="input-wrapper" style={{ color: "#ffff" }}>
+              <Shield className="input-icon" style={{ color: "#ffff" }}/>
               <select
                 id="role"
                 name="role"
@@ -443,6 +304,7 @@ export default function AdminCreateUser() {
                 onChange={handleRoleChange}
                 className="select"
                 disabled={loading}
+                style={{ backgroundColor: "#1f2235", border: "1px solid #2a2e45", color: "#ffffff" }}
               >
                 <option value="user">Usuario</option>
                 <option value="admin">Administrador</option>
@@ -452,7 +314,7 @@ export default function AdminCreateUser() {
 
           {/* Botones */}
           <div className="button-group">
-            <button type="button" onClick={handleClear} disabled={loading} className="button button-outline">
+            <button type="button" onClick={handleClear} disabled={loading} className="button button-outline" style={{ color: "#ffffff" }}>
               Limpiar formulario
             </button>
             <button type="submit" disabled={loading} className="button button-primary">

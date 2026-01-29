@@ -44,7 +44,6 @@ export default function UploadReceipt() {
   { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
   { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
 ];
 

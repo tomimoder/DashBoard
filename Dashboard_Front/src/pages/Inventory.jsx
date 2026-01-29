@@ -24,6 +24,7 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom'
+import toast, { Toaster } from 'react-hot-toast';
 
 const sidebarItems = [
   { id: "home", label: "Inicio", icon: LayoutDashboard, path: "/dashboard" },
@@ -31,7 +32,6 @@ const sidebarItems = [
   { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
   { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
 ];
 
@@ -80,7 +80,7 @@ export default function Inventory() {
       setProducts(response.data)
     } catch (error) {
       console.error('Error al cargar productos:', error)
-      alert('Error al cargar el inventario')
+      toast.error('Error al cargar el inventario')
     } finally {
       setLoading(false)
     }
@@ -136,7 +136,7 @@ export default function Inventory() {
       setMovements(response.data)
     } catch (error) {
       console.error('Error al cargar movimientos:', error)
-      alert('Error al cargar el historial')
+      toast.error('Error al cargar el historial')
     } finally {
       setLoadingMovements(false)
     }
@@ -171,7 +171,7 @@ export default function Inventory() {
 
   return (
     <div className="dashboard-layout">
-
+      <Toaster position="top-right" />
       {/* Sidebar */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-content">
@@ -200,11 +200,11 @@ export default function Inventory() {
       <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: '#fff' }}>
             <Package />
             Inventario
           </h1>
-          <p style={{ color: '#6b7280', margin: 0 }}>
+          <p style={{ color: '#fff', margin: 0 }}>
             Gestiona y visualiza el stock de tus productos
           </p>
         </div>
@@ -218,25 +218,25 @@ export default function Inventory() {
         }}>
           <div style={{
             padding: '1.5rem',
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '0.5rem'
+            backgroundColor: '#1f2235',
+            border: '1px solid #2a2e45',
+            borderRadius: '12px'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
-              Total Productos
+            <div style={{ fontSize: '0.875rem', color: '#8b92b2', fontWeight: '500' }}>
+              Productos Totales
             </div>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>
+            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#fff' }}>
               {products.length}
             </div>
           </div>
 
           <div style={{
             padding: '1.5rem',
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '0.5rem'
+            backgroundColor: '#1f2235',
+            border: '1px solid #2a2e45',
+            borderRadius: '12px'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.875rem', color: '#8b92b2', fontWeight: '500' }}>
               Stock Bajo
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>
@@ -246,11 +246,11 @@ export default function Inventory() {
 
           <div style={{
             padding: '1.5rem',
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '0.5rem'
+            backgroundColor: '#1f2235',
+            border: '1px solid #2a2e45',
+            borderRadius: '12px'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.875rem', color: '#8b92b2', fontWeight: '500' }}>
               Stock Total
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
@@ -266,13 +266,13 @@ export default function Inventory() {
           gap: '1rem',
           marginBottom: '2rem',
           padding: '1.5rem',
-          backgroundColor: '#fff',
-          border: '1px solid #e5e7eb',
-          borderRadius: '0.5rem'
+          backgroundColor: '#1f2235',
+          border: '1px solid #2a2e45',
+          borderRadius: '12px'
         }}>
           {/* Búsqueda */}
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#8b92b2', fontWeight: '500' }}>
               Buscar
             </label>
             <div style={{ position: 'relative' }}>
@@ -281,7 +281,7 @@ export default function Inventory() {
                 left: '0.75rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: '#9ca3af'
+                color: '#fff'
               }} size={20} />
               <input
                 type="text"
@@ -291,8 +291,11 @@ export default function Inventory() {
                 style={{
                   width: '100%',
                   padding: '0.5rem 0.75rem 0.5rem 2.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.5rem'
+                  border: '1px solid #2a2e45',
+                  borderRadius: '0.5rem',
+                  backgroundColor: '#1f2235',
+                  color: '#fff',
+                  
                 }}
               />
             </div>
@@ -300,7 +303,7 @@ export default function Inventory() {
 
           {/* Stock */}
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#8b92b2', fontWeight: '500' }}>
               Nivel de Stock
             </label>
             <select
@@ -309,8 +312,11 @@ export default function Inventory() {
               style={{
                 width: '100%',
                 padding: '0.5rem 0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.5rem'
+                border: '1px solid #2a2e45',
+                borderRadius: '0.5rem',
+                backgroundColor: '#1f2235',
+                border: '1px solid #2a2e45',
+                color: '#fff'
               }}
             >
               <option value="all">Todos</option>
@@ -332,9 +338,9 @@ export default function Inventory() {
                 style={{
                   width: '100%',
                   padding: '0.5rem 0.75rem',
-                  backgroundColor: '#6b7280',
+                  backgroundColor: '#1f2235',
                   color: '#fff',
-                  border: 'none',
+                  border: '1px solid #2a2e45',
                   borderRadius: '0.5rem',
                   cursor: 'pointer',
                   display: 'flex',
@@ -352,14 +358,15 @@ export default function Inventory() {
 
         {/* Tabla de Productos */}
         <div style={{
-          backgroundColor: '#fff',
-          border: '1px solid #e5e7eb',
+          backgroundColor: '#1f2235',
+          border: '1px solid #2a2e45',
           borderRadius: '0.5rem',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          color: '#fff'
         }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb' }}>
+              <thead style={{ backgroundColor: '#1f2235' }}>
                 <tr>
                   <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', fontSize: '0.875rem' }}>
                     Producto
@@ -390,24 +397,12 @@ export default function Inventory() {
                     <tr key={product.id} style={{ borderTop: '1px solid #e5e7eb' }}>
                       <td style={{ padding: '1rem' }}>
                         <div style={{ fontWeight: '500' }}>{product.name}</div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#8b92b2' }}>
                           {product.unit}
                         </div>
                       </td>
-                      <td style={{ padding: '1rem', color: '#6b7280' }}>
+                      <td style={{ padding: '1rem', color: '#8b92b2' }}>
                         {product.sku || '-'}
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        {product.category ? (
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            backgroundColor: '#f3f4f6',
-                            borderRadius: '9999px',
-                            fontSize: '0.875rem'
-                          }}>
-                            {product.category}
-                          </span>
-                        ) : '-'}
                       </td>
                       <td style={{ padding: '1rem', textAlign: 'center' }}>
                         <span style={{

@@ -11,7 +11,6 @@ import { LayoutDashboard, Upload, Users, FileText, Settings, Search, Bell, Credi
   { id: "sale", label: "Registrar Venta", icon: ShoppingCart, path: "/register-sale" },
   { id: "upload", label: "Subir Boleta", icon: Upload, path: "/upload-receipt" },
   { id: "users", label: "Usuarios", icon: Users, path: "/create-user" },
-  { id: "settings", label: "Configuración", icon: Settings, path: "/settings" },
   { id: "logout", label: "Cerrar Sesión", icon: LogOut, isLogout: true },
 ];
 
@@ -59,44 +58,6 @@ export function DashboardLayout() {
 
       {/* Main Content */}
       <div className="dashboard-main">
-        {/* Header */}
-        <header className="dashboard-header">
-          <nav className="dashboard-nav">
-            <Link to="/dashboard1" className="nav-link">
-              Home
-            </Link>
-            <Link to="/customers" className="nav-link">
-              Customers
-            </Link>
-            <div className="nav-dropdown">
-              <button className="nav-link">
-                Organizations
-                <span className="dropdown-arrow">▼</span>
-              </button>
-            </div>
-            <Link to="/upgrade" className="nav-link upgrade-link">
-              Upgrade account
-            </Link>
-          </nav>
-
-          <div className="dashboard-actions">
-            <button className="header-icon-btn" title="Search">
-              <Search size={18} />
-            </button>
-            <button className="header-icon-btn" title="Calendar">
-              <Calendar size={18} />
-            </button>
-            <button className="header-icon-btn" title="Cards">
-              <CreditCard size={18} />
-            </button>
-            <button className="header-icon-btn" title="Notifications">
-              <Bell size={18} />
-            </button>
-            <button className="user-avatar">
-              <span className="avatar-text">U</span>
-            </button>
-          </div>
-        </header>
 
         {/* Content Area */}
         <main className="dashboard-content">
